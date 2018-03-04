@@ -9,11 +9,31 @@
 import Foundation
 import UIKit
 
-class QRGen: UIImage {
+public class QRView: UIImageView {
+
+    var string: String?
+
+    public override init(frame: CGRect) {
+        // For use in code
+        super.init(frame: frame)
+        setupQR(string: "")
+    }
     
-    func generateContactCode(for string: String,_ view: UIView) -> UIImage? {
+    public required init?(coder aDecoder: NSCoder) {
+        // For use in Interface Builder
+        super.init(coder: aDecoder)
+        setupQR(string: "")
+    }
+
+    open func setupQR(string: String) {
+        if let qrImage = generateQRCode(for: string, view: self) {
+            self.image = qrImage
+        }
+    }
+    
+    private func generateQRCode(for string: String, view: UIView) -> UIImage? {
         
-        let data = string.data(using: String.Encoding.ascii) //(String.Encoding.isoLatin1)
+        let data = string.data(using: String.Encoding.ascii)
         
         if let filter = CIFilter(name: "CIQRCodeGenerator") {
             

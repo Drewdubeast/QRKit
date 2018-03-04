@@ -10,8 +10,7 @@
 		7C0FA8A92049E90B008ACD41 /* QRKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C0FA89F2049E90B008ACD41 /* QRKit.framework */; };
 		7C0FA8AE2049E90B008ACD41 /* QRKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C0FA8AD2049E90B008ACD41 /* QRKitTests.swift */; };
 		7C0FA8B02049E90B008ACD41 /* QRKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 7C0FA8A22049E90B008ACD41 /* QRKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		7C0FA8BA2049E966008ACD41 /* QRGen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C0FA8B92049E966008ACD41 /* QRGen.swift */; };
-		7C0FA8BC2049EA83008ACD41 /* QRRead.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C0FA8BB2049EA83008ACD41 /* QRRead.swift */; };
+		7C0FA8BA2049E966008ACD41 /* QRView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C0FA8B92049E966008ACD41 /* QRView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,8 +30,7 @@
 		7C0FA8A82049E90B008ACD41 /* QRKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = QRKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7C0FA8AD2049E90B008ACD41 /* QRKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRKitTests.swift; sourceTree = "<group>"; };
 		7C0FA8AF2049E90B008ACD41 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		7C0FA8B92049E966008ACD41 /* QRGen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRGen.swift; sourceTree = "<group>"; };
-		7C0FA8BB2049EA83008ACD41 /* QRRead.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRRead.swift; sourceTree = "<group>"; };
+		7C0FA8B92049E966008ACD41 /* QRView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,8 +74,7 @@
 			isa = PBXGroup;
 			children = (
 				7C0FA8A22049E90B008ACD41 /* QRKit.h */,
-				7C0FA8B92049E966008ACD41 /* QRGen.swift */,
-				7C0FA8BB2049EA83008ACD41 /* QRRead.swift */,
+				7C0FA8B92049E966008ACD41 /* QRView.swift */,
 				7C0FA8A32049E90B008ACD41 /* Info.plist */,
 			);
 			path = QRKit;
@@ -203,8 +200,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7C0FA8BC2049EA83008ACD41 /* QRRead.swift in Sources */,
-				7C0FA8BA2049E966008ACD41 /* QRGen.swift in Sources */,
+				7C0FA8BA2049E966008ACD41 /* QRView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
