@@ -12,8 +12,9 @@ A framework written for iOS for beginners generating QR codes
 ### How to generate a QR Code ###
 * Go to your main.storyboard
 * Add a new Image View to your view
-* Go to the properties manager and change the class to `QRView`
+* Go to the properties manager and change the class of the image view to `QRView`
 * Link the view to your ViewController
 * Call `setupQR()` on your image view with whatever string you want encoded
+  * For example: `myImageView.setupQR(string: "Hello, world!")`
 * Run!
 
