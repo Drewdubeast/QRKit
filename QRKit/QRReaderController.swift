@@ -9,6 +9,10 @@
 import UIKit
 import AVFoundation
 
+public protocol QRReaderDelegate {
+    func processQR(_ qrString: String)
+}
+
 public final class QRReaderController: UIViewController {
     
     var session = AVCaptureSession()
@@ -17,12 +21,23 @@ public final class QRReaderController: UIViewController {
         return AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInDualCamera,.builtInWideAngleCamera], mediaType: AVMediaType.video, position: .back)
     }
     
+    public var delegate: QRReaderDelegate?
+    
     override public func viewDidLoad() {
         super.viewDidLoad()
         setupCamera()
+        delegate?.processQR("hello!")
     }
     
-    func setupCamera() {
+    public init() {
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required public init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func setupCamera() {
         guard let device = getDevice(with: .back) else {
             return
         }
@@ -82,7 +97,9 @@ extension QRReaderController: AVCaptureMetadataOutputObjectsDelegate {
         let metadataObj = metadataObjects[0] as! AVMetadataMachineReadableCodeObject
         if metadataObj.type == AVMetadataObject.ObjectType.qr {
             if let metadataString = metadataObj.stringValue {
-               print(metadataString)
+                if let delegate = self.delegate {
+                    delegate.processQR(metadataString)
+                }
             }
         }
     }
