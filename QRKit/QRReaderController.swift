@@ -100,6 +100,9 @@ extension QRReaderController: AVCaptureMetadataOutputObjectsDelegate {
                 if let delegate = self.delegate {
                     delegate.processQR(metadataString)
                 }
+                else {
+                    
+                }
             }
         }
     }
