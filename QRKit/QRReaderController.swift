@@ -9,28 +9,41 @@
 import UIKit
 import AVFoundation
 
+//enum for camera position - user of framework can decide the camera position
+public enum CameraPosition {
+    case front
+    case back
+}
+
+//protocol that needs to be followed to process QR codes
 public protocol QRReaderDelegate {
     func processQR(_ qrString: String)
 }
 
 public final class QRReaderController: UIViewController {
     
-    var session = AVCaptureSession()
-    var previewLayer: AVCaptureVideoPreviewLayer?
-    var discoverySession: AVCaptureDevice.DiscoverySession? {
+    private var session = AVCaptureSession()
+    private var previewLayer: AVCaptureVideoPreviewLayer?
+    private var discoverySession: AVCaptureDevice.DiscoverySession? {
         return AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInDualCamera,.builtInWideAngleCamera], mediaType: AVMediaType.video, position: .back)
     }
     
+    //Delegate - Should be the app that
     public var delegate: QRReaderDelegate?
+    public var Position = CameraPosition.back
     
     override public func viewDidLoad() {
         super.viewDidLoad()
         setupCamera()
-        delegate?.processQR("hello!")
+        //delegate?.processQR("Woah there guy, can't find me ;)")
     }
     
     public init() {
         super.init(nibName: nil, bundle: nil)
+        
+        //delegate will be set to the controller/class that will handle the QR
+        //findings
+        self.delegate = delegate
     }
     
     required public init?(coder aDecoder: NSCoder) {
@@ -95,13 +108,11 @@ extension QRReaderController: AVCaptureMetadataOutputObjectsDelegate {
             return
         }
         let metadataObj = metadataObjects[0] as! AVMetadataMachineReadableCodeObject
+        
         if metadataObj.type == AVMetadataObject.ObjectType.qr {
             if let metadataString = metadataObj.stringValue {
                 if let delegate = self.delegate {
                     delegate.processQR(metadataString)
-                }
-                else {
-                    
                 }
             }
         }
