@@ -2,10 +2,10 @@
 
 A simple, lightweight framework written for beginners to work with QR Codes - reading and generating. *It is currently a work in progress and works, but still a work in progress*
 
-### What's Included ###
+## What's Included ##
 The framework includes dual functionality - generating and reading QR codes.
 
-### Installation/Integration ###
+## Installation/Integration ##
 I will soon include carthage and cocoapod compatibility, but as of now, this is not in it's fully stable release.
 
 **To install it manually:**
@@ -17,7 +17,7 @@ I will soon include carthage and cocoapod compatibility, but as of now, this is 
 * Go into the view controller you want to use it in, and type `import QRKit`
 
 
-# Usage #
+## Usage ##
 Using QRKit is easy, and requires little code compared to the full code required to do these without QRKit. So far, QRKit supports QR generating and reading.
 
 Here is a sample app that uses the framework: https://github.com/Drewdubeast/QRKitSample
@@ -48,7 +48,7 @@ Here is a sample app that uses the framework: https://github.com/Drewdubeast/QRK
   ```
 * Run!
 
-### How to read and process QR Codes ###
+## How to read and process QR Codes ##
 
 This is done simply by presenting the QR Reader included in the framework. This should be done in the `ViewDidAppear()` function like so:
 
