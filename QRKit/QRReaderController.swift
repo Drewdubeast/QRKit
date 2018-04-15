@@ -17,7 +17,7 @@ public enum CameraPosition {
 
 //protocol that needs to be followed to process QR codes
 public protocol QRReaderDelegate {
-    func processQR(_ qrString: String)
+    func processQR(_ qrString: String, with controller: UIViewController)
 }
 
 public final class QRReaderController: UIViewController {
@@ -28,6 +28,8 @@ public final class QRReaderController: UIViewController {
     
     //Delegate - Should be the app that
     public var delegate: QRReaderDelegate?
+    
+    fileprivate var metadataLastString: String?
     
     fileprivate var session = AVCaptureSession()
     fileprivate var previewLayer: AVCaptureVideoPreviewLayer?
@@ -49,7 +51,6 @@ public final class QRReaderController: UIViewController {
     override public func viewDidLoad() {
         super.viewDidLoad()
         updateCamera()
-        delegate?.processQR("Woah there guy, can't find me ;)")
     }
     
     public init() {
@@ -130,6 +131,7 @@ public final class QRReaderController: UIViewController {
 // MARK: Metadata Processing
 
 extension QRReaderController: AVCaptureMetadataOutputObjectsDelegate {
+    
     public func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
         
         if (metadataObjects.count == 0) {
@@ -140,8 +142,13 @@ extension QRReaderController: AVCaptureMetadataOutputObjectsDelegate {
         
         if metadataObj.type == AVMetadataObject.ObjectType.qr {
             if let metadataString = metadataObj.stringValue {
-                if let delegate = self.delegate {
-                    delegate.processQR(metadataString)
+                
+                if(metadataLastString != metadataString) {
+                    metadataLastString = metadataString
+                    
+                    if let delegate = self.delegate {
+                        delegate.processQR(metadataString, with: self)
+                    }
                 }
             }
         }
