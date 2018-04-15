@@ -29,6 +29,7 @@ public final class QRReaderController: UIViewController {
     //Delegate - Should be the app that
     public var delegate: QRReaderDelegate?
     
+    //track last metadata string to avoid sending same data over and over
     fileprivate var metadataLastString: String?
     
     fileprivate var session = AVCaptureSession()
@@ -63,7 +64,7 @@ public final class QRReaderController: UIViewController {
     
     private func updateCamera() {
         
-        //reset inputs
+        //reset input
         if let currentInput = self.input {
             self.session.removeInput(currentInput)
         }
@@ -135,7 +136,6 @@ extension QRReaderController: AVCaptureMetadataOutputObjectsDelegate {
     public func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
         
         if (metadataObjects.count == 0) {
-            print("No metadata objects found")
             return
         }
         let metadataObj = metadataObjects[0] as! AVMetadataMachineReadableCodeObject
