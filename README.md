@@ -18,9 +18,9 @@ I will soon include carthage and cocoapod compatibility, but as of now, this is 
 
 ### Cocoapods ###
 
-To install using CocoaPods, create a `Podfile` in your root project directory with the following contents
+To install using CocoaPods, create a `Podfile` in your root project directory with the following contents, replacing `MYAPP` with your project name:
 ```
-target 'QRKitTest_with_pods' do
+target 'MYAPP' do
     use_frameworks!
     pod 'QRKit', '~> 1.0'
 end
