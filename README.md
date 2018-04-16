@@ -8,7 +8,7 @@ The framework includes dual functionality - generating and reading QR codes.
 ## Installation/Integration ##
 I will soon include carthage and cocoapod compatibility, but as of now, this is not in it's fully stable release.
 
-**Embedded Binaries:**
+### Embedded Binaries ###
 * Download/Clone the project 
 * Drag the xcodeproj file and nest it within your project in Xcode
 * Click on your xcodeproj in your file hierarchy, and go to the general tab
@@ -16,7 +16,7 @@ I will soon include carthage and cocoapod compatibility, but as of now, this is 
 * Add the QRKit framework
 * Go into the view controller you want to use it in, and type `import QRKit`
 
-**Cocoapods:**
+### Cocoapods ###
 
 To install using CocoaPods, create a `Podfile` in your root project directory with the following contents
 ```
