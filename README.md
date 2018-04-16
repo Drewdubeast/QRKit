@@ -19,7 +19,7 @@ I will soon include carthage and cocoapod compatibility, but as of now, this is 
 ### Cocoapods ###
 
 To install using CocoaPods, create a `Podfile` in your root project directory with the following contents, replacing `MYAPP` with your project name:
-```
+```ruby
 target 'MYAPP' do
     use_frameworks!
     pod 'QRKit', '~> 1.0'
