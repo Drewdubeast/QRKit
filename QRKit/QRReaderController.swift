@@ -22,6 +22,18 @@ public protocol QRReaderDelegate {
 
 public final class QRReaderController: UIViewController {
     
+    private var _cancelButton: UIButton?
+    var cancelButton: UIButton {
+        if let currentButton = _cancelButton {
+            return currentButton
+        }
+        let button = UIButton(frame: CGRect(x: self.view.frame.maxX - 80, y: self.view.frame.minY + 50, width: 70, height: 30))
+        button.setTitle("Cancel", for: .normal)
+        button.addTarget(self, action: #selector(cancelButtonTapped), for: .touchUpInside)
+        _cancelButton = button
+        return button
+    }
+    
     //create inputs and outputs
     var input: AVCaptureDeviceInput?
     let metaDataCaptureOutput = AVCaptureMetadataOutput()
@@ -48,10 +60,13 @@ public final class QRReaderController: UIViewController {
             }
         }
     }
-    
+
     override public func viewDidLoad() {
         super.viewDidLoad()
+        
+        //update camera's inputs and outputs
         updateCamera()
+        self.view.addSubview(cancelButton)
     }
     
     public init() {
@@ -63,7 +78,6 @@ public final class QRReaderController: UIViewController {
     }
     
     private func updateCamera() {
-        
         //reset input
         if let currentInput = self.input {
             self.session.removeInput(currentInput)
@@ -129,6 +143,13 @@ public final class QRReaderController: UIViewController {
     }
 }
 
+// MARK: Button Pressing
+
+extension QRReaderController {
+    @objc func cancelButtonTapped() {
+        self.dismiss(animated: true, completion: nil)
+    }
+}
 // MARK: Metadata Processing
 
 extension QRReaderController: AVCaptureMetadataOutputObjectsDelegate {
