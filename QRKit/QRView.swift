@@ -134,7 +134,7 @@ public class QRView: UIImageView {
             for column in 0 ..< Int(width) {
                 let offset = row * width + column
                 if pixelBuffer[offset] == .black {
-                    pixelBuffer[offset] = .red
+                    pixelBuffer[offset] = uiColorComponents(color: color)
                 }
             }
         }
@@ -187,5 +187,12 @@ public class QRView: UIImageView {
         static func == (lhs: RGBA32, rhs: RGBA32) -> Bool {
             return lhs.color == rhs.color
         }
+    }
+    
+    func uiColorComponents(color: UIColor) -> RGBA32 {
+        return RGBA32(red: UInt8(color.cgColor.components![0]),
+                      green: UInt8(color.cgColor.components![1]),
+                      blue: UInt8(color.cgColor.components![2]),
+                      alpha: UInt8(color.cgColor.components![3]))
     }
 }
