@@ -12,7 +12,7 @@ import UIKit
 public class QRView: UIImageView {
 
     var string: String?
-    var currentColor: UIColor?
+    var currentColor: RGBA32?
     
     open var qrimage: UIImage {
         return self.image!
@@ -35,7 +35,7 @@ public class QRView: UIImageView {
             self.image = qrImage
         }
     }
-    
+    /*
     open func recolor(with color: UIColor) {
         guard let image = self.image else {
             return
@@ -50,7 +50,7 @@ public class QRView: UIImageView {
             return
         }
         self.image = UIImage(ciImage: coloredImage)
-    }
+    }*/
     
     private func generateQRCode(for string: String, view: UIView, for color: UIColor) -> UIImage? {
         
@@ -92,13 +92,13 @@ public class QRView: UIImageView {
     }
     
     // MARK : PIXEL PROCESSING
-    open func recolor(to color: UIColor) -> UIImage? {
+    open func recolor(to color: RGBA32) {
         
         //credit to @Rob on StackOverflow for this function
 
         guard let ciImage = self.image?.ciImage else {
             print("Can not get image data")
-            return nil
+            return
         }
         
         //create cgImage from ciImage of the QRCode
@@ -107,7 +107,7 @@ public class QRView: UIImageView {
         
         guard let inputCGImage = cgImage else {
             print("unable to get cgImage")
-            return nil
+            return
         }
         let colorSpace = CGColorSpaceCreateDeviceRGB()
         let width = inputCGImage.width
@@ -118,14 +118,14 @@ public class QRView: UIImageView {
         let bitmapInfo = RGBA32.bitmapInfo
         
         guard let context = CGContext(data: nil, width: width, height: height, bitsPerComponent: bitsPerComponent, bytesPerRow: bytesPerRow, space: colorSpace, bitmapInfo: bitmapInfo) else {
-            print("unable to create context")
-            return nil
+            print("Unable to create context")
+            return
         }
         context.draw(inputCGImage, in: CGRect(x: 0, y: 0, width: width, height: height))
         
         guard let buffer = context.data else {
             print("unable to get context data")
-            return nil
+            return
         }
         
         let pixelBuffer = buffer.bindMemory(to: RGBA32.self, capacity: width * height)
@@ -133,66 +133,60 @@ public class QRView: UIImageView {
         for row in 0 ..< Int(height) {
             for column in 0 ..< Int(width) {
                 let offset = row * width + column
-                if pixelBuffer[offset] == .black {
-                    pixelBuffer[offset] = uiColorComponents(color: color)
+                if pixelBuffer[offset] == currentColor ?? .black {
+                    pixelBuffer[offset] = color
                 }
             }
         }
         
+        currentColor = color
         let outputCGImage = context.makeImage()!
         let outputImage = UIImage(cgImage: outputCGImage, scale: (image?.scale)!, orientation: (image?.imageOrientation)!)
         
         self.image = outputImage
-        return outputImage
+    }
+}
+
+// MARK: RGBA Struct
+public struct RGBA32: Equatable {
+    private var color: UInt32
+    
+    var redComponent: UInt8 {
+        return UInt8((color >> 24) & 255)
     }
     
-    struct RGBA32: Equatable {
-        private var color: UInt32
-        
-        var redComponent: UInt8 {
-            return UInt8((color >> 24) & 255)
-        }
-        
-        var greenComponent: UInt8 {
-            return UInt8((color >> 16) & 255)
-        }
-        
-        var blueComponent: UInt8 {
-            return UInt8((color >> 8) & 255)
-        }
-        
-        var alphaComponent: UInt8 {
-            return UInt8((color >> 0) & 255)
-        }
-        
-        init(red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8) {
-            let red   = UInt32(red)
-            let green = UInt32(green)
-            let blue  = UInt32(blue)
-            let alpha = UInt32(alpha)
-            color = (red << 24) | (green << 16) | (blue << 8) | (alpha << 0)
-        }
-        
-        static let red     = RGBA32(red: 255, green: 0,   blue: 0,   alpha: 255)
-        static let green   = RGBA32(red: 0,   green: 255, blue: 0,   alpha: 255)
-        static let blue    = RGBA32(red: 0,   green: 0,   blue: 255, alpha: 255)
-        static let white   = RGBA32(red: 255, green: 255, blue: 255, alpha: 255)
-        static let black   = RGBA32(red: 0,   green: 0,   blue: 0,   alpha: 255)
-        static let magenta = RGBA32(red: 255, green: 0,   blue: 255, alpha: 255)
-        static let yellow  = RGBA32(red: 255, green: 255, blue: 0,   alpha: 255)
-        static let cyan    = RGBA32(red: 0,   green: 255, blue: 255, alpha: 255)
-        
-        static let bitmapInfo = CGImageAlphaInfo.premultipliedLast.rawValue | CGBitmapInfo.byteOrder32Little.rawValue
-        
-        static func == (lhs: RGBA32, rhs: RGBA32) -> Bool {
-            return lhs.color == rhs.color
-        }
+    var greenComponent: UInt8 {
+        return UInt8((color >> 16) & 255)
     }
     
-    func uiColorComponents(color: UIColor) -> RGBA32 {
-        return RGBA32(red: UInt8(color.cgColor.components![0]),
-                      green: UInt8(color.cgColor.components![1]),
-                      blue: UInt8(color.cgColor.components![2]),
-                      alpha: UInt8(color.cgColor.components![3]))
+    var blueComponent: UInt8 {
+        return UInt8((color >> 8) & 255)
+    }
+    
+    var alphaComponent: UInt8 {
+        return UInt8((color >> 0) & 255)
+    }
+    
+    init(red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8) {
+        let red   = UInt32(red)
+        let green = UInt32(green)
+        let blue  = UInt32(blue)
+        let alpha = UInt32(alpha)
+        color = (red << 24) | (green << 16) | (blue << 8) | (alpha << 0)
+    }
+    
+    public static let red     = RGBA32(red: 255, green: 0,   blue: 0,   alpha: 255)
+    public static let green   = RGBA32(red: 0,   green: 255, blue: 0,   alpha: 255)
+    public static let blue    = RGBA32(red: 0,   green: 0,   blue: 255, alpha: 255)
+    public static let white   = RGBA32(red: 255, green: 255, blue: 255, alpha: 255)
+    public static let black   = RGBA32(red: 0,   green: 0,   blue: 0,   alpha: 255)
+    public static let magenta = RGBA32(red: 255, green: 0,   blue: 255, alpha: 255)
+    public static let yellow  = RGBA32(red: 255, green: 255, blue: 0,   alpha: 255)
+    public static let cyan    = RGBA32(red: 0,   green: 255, blue: 255, alpha: 255)
+    
+    static let bitmapInfo = CGImageAlphaInfo.premultipliedLast.rawValue | CGBitmapInfo.byteOrder32Little.rawValue
+    
+    public static func == (lhs: RGBA32, rhs: RGBA32) -> Bool {
+        return lhs.color == rhs.color
     }
 }
