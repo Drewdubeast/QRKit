@@ -37,20 +37,18 @@ Using QRKit is easy, and requires little code compared to the full code required
 Here is a sample app that uses the framework: https://github.com/Drewdubeast/QRKitSample
 
 ### How to generate a QR Code ###
-* Go to your main.storyboard
-* Add a new Image View to your view
-* Go to the properties manager and change the class of the image view to `QRView`
-* Link the view to your ViewController
-* Call `setupQR()` on your image view with whatever string you want encoded
-  * For example: `myImageView.setupQR(string: "Hello, world!")`
-  * Your `ViewController` will look like this:
+* Create a `QRView` by adding a `UIImageView` to your storyboard and setting its class to `QRView`
+* Add an outlet for this to your `ViewController`
+* `setupQR(string)`
+
+Your `ViewController` will look like this:
   ```swift
   import UIKit
   import QRKit
 
   class QRGenViewController: UIViewController {
 
-    @IBOutlet weak var QRSampleView: QRView!
+    @IBOutlet weak var QRSampleView: QRView! //linked to storyboard UIView
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -60,9 +58,18 @@ Here is a sample app that uses the framework: https://github.com/Drewdubeast/QRK
     }
   }
   ```
-* Run!
 
-## How to read and process QR Codes ##
+### To change colors ###
+
+As easy as calling `recolor(color: UIColor)` on your `QRView`
+
+For example:
+```swift
+QRSampleView.setupQR(string: "Hello from QRKit!")
+QRSampleView.recolor(with: .cyan)
+```
+
+### How to read and process QR Codes ###
 
 This is done simply by presenting the QR Reader included in the framework. This should be done in the `ViewDidAppear()` function like so:
 
