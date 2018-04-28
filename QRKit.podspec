@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "QRKit"
-  s.version      = "1.0.0"
+  s.version      = "1.0.1"
   s.summary      = "A framework written for iOS for beginners using QR code scanning and generating them"
   s.description  = "A QR code framework written in swift for iOS that aids in generating and reading QR codes"
   s.homepage     = "https://github.com/Drewdubeast/QRKit"
