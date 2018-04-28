@@ -12,7 +12,7 @@ import UIKit
 public class QRView: UIImageView {
 
     var string: String?
-    var currentColor: RGBA32?
+    var currentColor: UIColor?
     
     open var qrimage: UIImage {
         return self.image!
@@ -35,46 +35,49 @@ public class QRView: UIImageView {
             self.image = qrImage
         }
     }
-    /*
+    
+    //recolor the image (since we use a filter, if we keep recoloring same image it fades,
+    //so just recreate the image everytime with a new color
     open func recolor(with color: UIColor) {
-        guard let image = self.image else {
+        guard self.image != nil else {
+            print("You must call setupQR before you can recolor anything!")
+            return
+        }
+        guard let string = self.string else {
+            print("You must call setupQR before you can recolor anything!")
             return
         }
         guard let colorFilter = CIFilter(name: "CIFalseColor") else {
+            print("Could not create color filter")
             return
         }
-        colorFilter.setValue(image.ciImage, forKey: "inputImage")
-        colorFilter.setValue(CIColor(red: 1, green: 1, blue: 1), forKey: "inputColor1")
-        colorFilter.setValue(CIColor(cgColor: color.cgColor), forKey: "inputColor0")
-        guard let coloredImage = colorFilter.outputImage else {
-            return
+        if let image = generateQRCode(for: string, view: self, for: color) {
+            colorFilter.setValue(image.ciImage, forKey: "inputImage")
+            colorFilter.setValue(CIColor(red: 1, green: 1, blue: 1), forKey: "inputColor1")
+            colorFilter.setValue(CIColor(cgColor: color.cgColor), forKey: "inputColor0")
+            guard let coloredImage = colorFilter.outputImage else {
+                return
+            }
+            self.image = UIImage(ciImage: coloredImage)
         }
-        self.image = UIImage(ciImage: coloredImage)
-    }*/
+    }
     
     private func generateQRCode(for string: String, view: UIView, for color: UIColor) -> UIImage? {
         
         let data = string.data(using: String.Encoding.ascii)
         
+        self.string = string
+        
         if let filter = CIFilter(name: "CIQRCodeGenerator") {
-            
-            guard let colorFilter = CIFilter(name: "CIFalseColor") else {
-                return nil
-            }
 
             //set the data to the contact data
             filter.setValue(data, forKey: "inputMessage")
             filter.setValue("L", forKey: "inputCorrectionLevel")
 
-            colorFilter.setValue(filter.outputImage, forKey: "inputImage")
-            colorFilter.setValue(CIColor(red: 1, green: 1, blue: 1), forKey: "inputColor1")
-            colorFilter.setValue(CIColor(cgColor: color.cgColor), forKey: "inputColor0")
-            guard let codeImage = colorFilter.outputImage
+            guard let codeImage = filter.outputImage
                 else {
                     return nil
             }
-            
-            //guard let codeImage = filter.outputImage else { return nil }
             
             //size of the contact code image
             let scaleX = view.frame.size.width / codeImage.extent.size.width
@@ -84,109 +87,10 @@ public class QRView: UIImageView {
             let transform = CGAffineTransform(scaleX: scaleX, y: scaleY)
             
             //return the image
-            if let output = colorFilter.outputImage?.transformed(by: transform) {
+            if let output = filter.outputImage?.transformed(by: transform) {
                 return UIImage(ciImage: output)
             }
         }
         return nil
-    }
-    
-    // MARK : PIXEL PROCESSING
-    open func recolor(to color: RGBA32) {
-        
-        //credit to @Rob on StackOverflow for this function
-
-        guard let ciImage = self.image?.ciImage else {
-            print("Can not get image data")
-            return
-        }
-        
-        //create cgImage from ciImage of the QRCode
-        let ciContext = CIContext(options: nil)
-        let cgImage = ciContext.createCGImage(ciImage, from: ciImage.extent)
-        
-        guard let inputCGImage = cgImage else {
-            print("unable to get cgImage")
-            return
-        }
-        let colorSpace = CGColorSpaceCreateDeviceRGB()
-        let width = inputCGImage.width
-        let height = inputCGImage.height
-        let bytesPerPixel = 4
-        let bitsPerComponent = 8
-        let bytesPerRow = bytesPerPixel * width
-        let bitmapInfo = RGBA32.bitmapInfo
-        
-        guard let context = CGContext(data: nil, width: width, height: height, bitsPerComponent: bitsPerComponent, bytesPerRow: bytesPerRow, space: colorSpace, bitmapInfo: bitmapInfo) else {
-            print("Unable to create context")
-            return
-        }
-        context.draw(inputCGImage, in: CGRect(x: 0, y: 0, width: width, height: height))
-        
-        guard let buffer = context.data else {
-            print("unable to get context data")
-            return
-        }
-        
-        let pixelBuffer = buffer.bindMemory(to: RGBA32.self, capacity: width * height)
-        
-        for row in 0 ..< Int(height) {
-            for column in 0 ..< Int(width) {
-                let offset = row * width + column
-                if pixelBuffer[offset] == currentColor ?? .black {
-                    pixelBuffer[offset] = color
-                }
-            }
-        }
-        
-        currentColor = color
-        let outputCGImage = context.makeImage()!
-        let outputImage = UIImage(cgImage: outputCGImage, scale: (image?.scale)!, orientation: (image?.imageOrientation)!)
-        
-        self.image = outputImage
-    }
-}
-
-// MARK: RGBA Struct
-public struct RGBA32: Equatable {
-    private var color: UInt32
-    
-    var redComponent: UInt8 {
-        return UInt8((color >> 24) & 255)
-    }
-    
-    var greenComponent: UInt8 {
-        return UInt8((color >> 16) & 255)
-    }
-    
-    var blueComponent: UInt8 {
-        return UInt8((color >> 8) & 255)
-    }
-    
-    var alphaComponent: UInt8 {
-        return UInt8((color >> 0) & 255)
-    }
-    
-    init(red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8) {
-        let red   = UInt32(red)
-        let green = UInt32(green)
-        let blue  = UInt32(blue)
-        let alpha = UInt32(alpha)
-        color = (red << 24) | (green << 16) | (blue << 8) | (alpha << 0)
-    }
-    
-    public static let red     = RGBA32(red: 255, green: 0,   blue: 0,   alpha: 255)
-    public static let green   = RGBA32(red: 0,   green: 255, blue: 0,   alpha: 255)
-    public static let blue    = RGBA32(red: 0,   green: 0,   blue: 255, alpha: 255)
-    public static let white   = RGBA32(red: 255, green: 255, blue: 255, alpha: 255)
-    public static let black   = RGBA32(red: 0,   green: 0,   blue: 0,   alpha: 255)
-    public static let magenta = RGBA32(red: 255, green: 0,   blue: 255, alpha: 255)
-    public static let yellow  = RGBA32(red: 255, green: 255, blue: 0,   alpha: 255)
-    public static let cyan    = RGBA32(red: 0,   green: 255, blue: 255, alpha: 255)
-    
-    static let bitmapInfo = CGImageAlphaInfo.premultipliedLast.rawValue | CGBitmapInfo.byteOrder32Little.rawValue
-    
-    public static func == (lhs: RGBA32, rhs: RGBA32) -> Bool {
-        return lhs.color == rhs.color
     }
 }
