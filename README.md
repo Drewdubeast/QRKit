@@ -59,7 +59,7 @@ Your `ViewController` will look like this:
   }
   ```
 
-### To change colors ###
+### Color Customization ###
 
 As easy as calling `recolor(color: UIColor)` on your `QRView`
 
